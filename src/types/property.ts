@@ -1,4 +1,5 @@
 export interface Property {
+    image_url: any;
     id: string;
     title: string;
     description: string;
