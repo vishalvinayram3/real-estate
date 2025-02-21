@@ -1,3 +1,5 @@
+"use client"; // ✅ Ensures it only runs on the client
+
 import Image from "next/image";
 import { Property } from "../types/property";
 
@@ -7,12 +9,14 @@ interface Props {
 
 export default function PropertyCard({ property }: Props) {
   return (
-    <div className="bg-white shadow-lg rounded-lg overflow-hidden transition-transform hover:scale-105">
-      {property.image_url ? (
-        <Image src={property.image_url} width={400} height={250} alt={property.title} className="w-full h-56 object-cover" />
-      ) : (
-        <Image src="/property-placeholder.jpg" width={400} height={250} alt="No Image" className="w-full h-56 object-cover" />
-      )}
+    <div className="bg-white shadow-lg rounded-lg overflow-hidden transform hover:scale-105 transition-all duration-300">
+      <Image
+        src={'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8cHJvcGVydHl8ZW58MHx8MHx8fDA%3D'}
+        width={400}
+        height={250}
+        alt={property.title}
+        className="w-full h-56 object-cover"
+      />
       <div className="p-4">
         <h3 className="text-lg font-semibold text-gray-900">{property.title}</h3>
         <p className="text-gray-600 text-sm">{property.description}</p>

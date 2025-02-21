@@ -1,8 +1,9 @@
-"use client";
+"use client"; // ✅ Ensure Navbar is a Client Component
+
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { supabase } from "../lib/supabase";
-import LogoutButton from "../components/LoginButton";
+import LogoutButton from "./LoginButton";
 
 export default function Navbar() {
   const [user, setUser] = useState<any>(null);
@@ -23,6 +24,11 @@ export default function Navbar() {
     <nav className="bg-white shadow-md p-4 flex justify-between items-center">
       <div className="text-2xl font-bold text-blue-600">
         <Link href="/">NoBroker Clone</Link>
+      </div>
+      <div className="flex space-x-6 text-gray-700 font-medium">
+        <Link href="/properties?type=buy" className="hover:text-blue-600">Buy</Link>
+        <Link href="/properties?type=rent" className="hover:text-blue-600">Rent</Link>
+        <Link href="/properties?type=sell" className="hover:text-blue-600">Sell</Link>
       </div>
       <div className="flex space-x-4">
         {user ? (
