@@ -3,6 +3,7 @@ import { useState } from "react";
 import { supabase } from "../../../lib/supabase";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import RedirectIfAuthenticated from "@/components/RedirectIfAuthenticate";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -24,6 +25,7 @@ export default function Login() {
   };
 
   return (
+    <RedirectIfAuthenticated>
     <div className="flex justify-center items-center h-screen">
       <form onSubmit={handleLogin} className="bg-white p-6 rounded shadow-md w-96">
         <h2 className="text-xl font-bold mb-4">Login</h2>
@@ -47,5 +49,6 @@ export default function Login() {
         <Link href='/auth/register'>Register</Link>
       </form>
     </div>
+    </RedirectIfAuthenticated>
   );
 }

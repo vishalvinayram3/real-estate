@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { supabase } from "../../../lib/supabase";
 import PropertyCard from "../../../components/PropertyCard";
 import { Property } from "../../../types/property";
+import ProtectedRoute from "@/components/ProtectedRoute";
 
 export default function BuyerDashboard() {
   const [properties, setProperties] = useState<Property[]>([]);
@@ -25,6 +26,8 @@ export default function BuyerDashboard() {
   }
 
   return (
+    <ProtectedRoute>
+
     <div className="p-6 mt-10">
       <h1 className="text-3xl font-bold text-gray-900 mb-4">Available Properties</h1>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -35,5 +38,6 @@ export default function BuyerDashboard() {
         )}
       </div>
     </div>
+    </ProtectedRoute>
   );
 }

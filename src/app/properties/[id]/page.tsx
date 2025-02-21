@@ -5,6 +5,8 @@ import { useParams } from "next/navigation";
 import { supabase } from "../../../lib/supabase";
 import Image from "next/image";
 
+
+
 export default function PropertyDetailPage() {
   const params = useParams();
   const id = params?.id;
@@ -54,6 +56,19 @@ export default function PropertyDetailPage() {
       <p className="text-gray-600 text-lg mt-2">{property.description}</p>
       <p className="text-blue-600 font-bold text-xl mt-4">${property.price.toLocaleString()}</p>
       <p className="text-sm text-gray-500 mt-1">{property.type.toUpperCase()}</p>
+      {property.latitude && property.longitude && (
+         <div className="mt-6">
+         <h3 className="text-xl font-semibold">Location</h3>
+         <a
+           href={`https://www.google.com/maps?q=${property.latitude},${property.longitude}`}
+           target="_blank"
+           rel="noopener noreferrer"
+           className="text-blue-600 underline"
+         >
+           View on Google Maps
+         </a>
+       </div>
+      )}
     </div>
   );
 }

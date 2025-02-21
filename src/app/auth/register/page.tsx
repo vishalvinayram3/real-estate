@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { supabase } from "../../../lib/supabase";
 import { useRouter } from "next/navigation";
+import RedirectIfAuthenticated from "@/components/RedirectIfAuthenticate";
 
 export default function Register() {
   const [email, setEmail] = useState("");
@@ -30,6 +31,7 @@ export default function Register() {
   };
 
   return (
+    <RedirectIfAuthenticated>
     <div className="flex justify-center items-center h-screen">
       <form onSubmit={handleRegister} className="bg-white p-6 rounded shadow-md w-96">
         <h2 className="text-xl font-bold mb-4">Register</h2>
@@ -44,5 +46,6 @@ export default function Register() {
         </button>
       </form>
     </div>
+    </RedirectIfAuthenticated>
   );
 }
