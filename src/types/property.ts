@@ -8,3 +8,10 @@ export interface Property {
     owner_id: string;
   }
   
+
+  export enum Role {
+    Buyer = "buyer",
+    Agent = "agent",
+    Seller = "seller",
+  }
+  

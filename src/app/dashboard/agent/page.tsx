@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { supabase } from "../../../lib/supabase";
 import { useRouter } from "next/navigation";
 import ProtectedRoute from "@/components/ProtectedRoute";
+import { Role } from "@/types/property";
 
 export default function AgentDashboard() {
   const [properties, setProperties] = useState([]);
@@ -20,16 +21,35 @@ export default function AgentDashboard() {
   const [longitude, setLongitude] = useState<number | null>(null);
   const [image, setImage] = useState<File | null>(null);
   const [userId, setUserId] = useState<string | null>(null);
+  const [agentId, setAgentId] = useState<string | null>(null);
+
   const router = useRouter();
 
   useEffect(() => {
-    const fetchUser = async () => {
+    const fetchAgent = async () => {
       const { data } = await supabase.auth.getUser();
-      if (data?.user) setUserId(data.user.id);
-      else router.push("/auth/login");
+      if (!data?.user) return;
+
+      const { data: agentData, error } = await supabase
+        .from("agents")
+        .select("*")
+        .eq("agent_email", data.user.email)
+        .single();
+
+      if (error || !agentData) return;
+
+      setAgentId(agentData.id);
+      fetchProperties(agentData.id);
     };
-    fetchUser();
-  }, [router]);
+
+    const fetchProperties = async (id: string) => {
+      const { data, error } = await supabase.from("properties").select("*").eq("added_by", id);
+      if (error) console.error("Error fetching properties:", error);
+      else setProperties(data);
+    };
+
+    fetchAgent();
+  }, []);
 
   const handleImageUpload = async () => {
     if (!image) return null;
@@ -81,8 +101,7 @@ export default function AgentDashboard() {
   };
 
   return (
-    <ProtectedRoute>
-
+<ProtectedRoute role={Role.Agent}>
     <div className="p-6 mt-10">
       <h1 className="text-3xl font-bold text-gray-900 mb-4">Your Properties</h1>
 
@@ -101,6 +120,18 @@ export default function AgentDashboard() {
         <input type="file" accept="image/*" onChange={(e) => setImage(e.target.files?.[0] || null)} className="border p-2 w-full mb-2" />
         <button onClick={addProperty} className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Add Property</button>
       </div>
+      <h2 className="text-xl font-semibold mt-6 mb-4">Your Properties</h2>
+      {properties.length > 0 ? (
+        <ul className="bg-white p-4 shadow-md rounded-lg">
+          {properties.map((property) => (
+            <li key={property.id} className="border-b py-2">
+              {property.title} - <span className={property.status === "approved" ? "text-green-600" : "text-red-600"}>{property.status}</span>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p className="text-gray-600">No properties added yet.</p>
+      )}
     </div>
     </ProtectedRoute>
   );

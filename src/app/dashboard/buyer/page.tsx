@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { supabase } from "../../../lib/supabase";
 import PropertyCard from "../../../components/PropertyCard";
-import { Property } from "../../../types/property";
+import { Property, Role } from "../../../types/property";
 import ProtectedRoute from "@/components/ProtectedRoute";
 
 export default function BuyerDashboard() {
@@ -26,7 +26,7 @@ export default function BuyerDashboard() {
   }
 
   return (
-    <ProtectedRoute>
+    <ProtectedRoute role={Role.Buyer}>
 
     <div className="p-6 mt-10">
       <h1 className="text-3xl font-bold text-gray-900 mb-4">Available Properties</h1>
