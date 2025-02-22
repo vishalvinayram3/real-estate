@@ -25,11 +25,6 @@ export default function Navbar() {
       <div className="text-2xl font-bold text-blue-600">
         <Link href="/">NoBroker Clone</Link>
       </div>
-      <div className="flex space-x-6 text-gray-700 font-medium">
-        <Link href="/properties?type=buy" className="hover:text-blue-600">Buy</Link>
-        <Link href="/properties?type=rent" className="hover:text-blue-600">Rent</Link>
-        <Link href="/properties?type=sell" className="hover:text-blue-600">Sell</Link>
-      </div>
       <div className="flex space-x-4">
         {user ? (
           <>
