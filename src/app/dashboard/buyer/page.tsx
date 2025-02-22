@@ -26,7 +26,6 @@ export default function BuyerDashboard() {
   }
 
   return (
-    <ProtectedRoute role={Role.Buyer}>
 
     <div className="p-6 mt-10">
       <h1 className="text-3xl font-bold text-gray-900 mb-4">Available Properties</h1>
@@ -38,6 +37,5 @@ export default function BuyerDashboard() {
         )}
       </div>
     </div>
-    </ProtectedRoute>
   );
 }

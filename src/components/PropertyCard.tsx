@@ -1,8 +1,9 @@
 "use client";
 
 import Image from "next/image";
-import { Property } from "../types/property";
+import { Property, Role } from "../types/property";
 import Link from "next/link";
+import ProtectedRoute from "./ProtectedRoute";
 
 interface Props {
   property: Property;
