@@ -2,9 +2,10 @@
 
 import { useState, useEffect } from "react";
 import { supabase } from "../../lib/supabase";
-import PropertyCard from "../../components/PropertyCard";
 import { Property } from "../../types/property";
 import { useRouter } from "next/navigation";
+import PropertyCard from "@/components/PropertyCard";
+import Navbar from "@/components/Navbar";
 
 export default function Properties() {
   const [properties, setProperties] = useState<Property[]>([]);
@@ -13,7 +14,8 @@ export default function Properties() {
   const [userRole, setUserRole] = useState<string | null>(null);
   const router = useRouter();
 
-  
+
+
   useEffect(() => {
     const fetchProperties = async () => {
       let query = supabase.from("properties").select("*").eq("status", "approved");
@@ -33,8 +35,10 @@ export default function Properties() {
   }, [userRole, userId, filter]); // ✅ Added `filter` as a dependency
 
   return (
+    <>
+    <Navbar />
     <div className="p-6 max-w-7xl mx-auto">
-      <h1 className="text-4xl font-bold text-gray-900 mb-6">Available Properties</h1>
+      <h1 className="text-4xl font-bold text-gray-900 mb-6">Top Properties</h1>
 
       {/* Filter Toggle */}
       <div className="flex space-x-4 mb-6">
@@ -51,6 +55,12 @@ export default function Properties() {
           Buy
         </button>
       </div>
+      {/* Sorting Options */} 
+      <div style={{margin:'10px 10px 10px 10px'}}>
+        <button
+          className={`px-6 py-2 rounded-md font-semibold transition ${filter === "sell" ? "bg-red-600 text-white" : "bg-gray-200"}`} 
+        onClick={()=>window.location.href='/dashboard/buyer'}>View all Property</button>
+      </div>
 
       {/* Properties Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -61,5 +71,6 @@ export default function Properties() {
         )}
       </div>
     </div>
+    </>
   );
 }
