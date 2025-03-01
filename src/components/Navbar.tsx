@@ -23,7 +23,7 @@ export default function Navbar() {
   return (
     <nav className="bg-white shadow-md p-4 flex justify-between items-center">
       <div className="text-2xl font-bold text-blue-600">
-        <Link href="/">NoBroker Clone</Link>
+        <Link href="/">BrokerKart</Link>
       </div>
       <div className="flex space-x-4">
         {user ? (

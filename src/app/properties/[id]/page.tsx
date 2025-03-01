@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { supabase } from "../../../lib/supabase";
 import Image from "next/image";
+import ProtectedRoute, { Role } from "@/components/ProtectedRoute";
 
 export default function PropertyDetailPage() {
   const params = useParams();
@@ -46,6 +47,7 @@ export default function PropertyDetailPage() {
   if (!property) return <div className="text-center p-10 text-gray-600">No property details available.</div>;
 
   return (
+      <ProtectedRoute role={Role.Buyer}>
     <div className="max-w-5xl mx-auto p-6 mt-10 bg-white shadow-lg rounded-lg">
       {/* Property Image */}
       <div className="relative w-full h-96 rounded-lg overflow-hidden">
@@ -121,5 +123,6 @@ export default function PropertyDetailPage() {
         </div>
       )}
     </div>
+    </ProtectedRoute>
   );
 }

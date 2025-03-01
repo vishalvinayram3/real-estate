@@ -54,8 +54,8 @@ export default function Register() {
         <label className="block text-sm font-medium text-gray-700">Select Role:</label>
         <select value={role} onChange={(e) => setRole(e.target.value as Role)} className="border p-2 w-full mb-2">
           <option value={Role.Buyer}>Buyer</option>
-          <option value={Role.Seller}>Seller</option>
-          <option value={Role.Agent}>Agent</option>
+          <option value={Role.Seller}>Admin</option>
+          <option value={Role.Agent}>Seller</option>
         </select>
 
         <button type="submit" className="bg-blue-600 text-white p-2 w-full rounded hover:bg-blue-700">Register</button>

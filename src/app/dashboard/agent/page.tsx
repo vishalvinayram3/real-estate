@@ -27,64 +27,76 @@ export default function AgentDashboard() {
 
   useEffect(() => {
     const fetchAgent = async () => {
-      const { data } = await supabase.auth.getUser();
-      if (!data?.user) return;
-
-      const { data: agentData, error } = await supabase
-        .from("agents")
-        .select("*")
-        .eq("agent_email", data.user.email)
+      const { data, error } = await supabase.auth.getUser();
+      if (!data?.user) {
+        console.error("User not authenticated.");
+        return;
+      }
+  
+      const { data: agentData, error: agentError } = await supabase
+        .from("users")
+        .select("id, seller_id")
+        .eq("email", data.user.email)
         .single();
-
-      if (error || !agentData) return;
-
+  
+      if (agentError || !agentData) {
+        console.error("Error fetching agent:", agentError || "No seller found with this email.");
+        return;
+      }
+  
       setAgentId(agentData.id);
+      setUserId(agentData.seller_id);
       fetchProperties(agentData.id);
     };
-
-    const fetchProperties = async (id: string) => {
-      const { data, error } = await supabase.from("properties").select("*").eq("added_by", id);
-      if (error) console.error("Error fetching properties:", error);
-      else setProperties(data);
-    };
-
+  
     fetchAgent();
   }, []);
+  const fetchProperties = async (id: string) => {
+    const { data, error } = await supabase.from("properties").select("*").eq("added_by", id);
+    if (error) {
+      console.error("Error fetching properties:", error);
+    } else {
+      setProperties(data);
+    }
+  };
 
   const handleImageUpload = async () => {
     if (!image) return null;
-
+  
     const fileName = `${Date.now()}-${image.name}`;
     const filePath = `property-images/${fileName}`;
-
+  
     const { data, error } = await supabase.storage.from("property-images").upload(filePath, image);
-
+  
     if (error) {
       console.error("Image Upload Error:", error);
       return null;
     }
-
-    const { data: publicUrlData } = supabase.storage.from("property-images").getPublicUrl(filePath);
-    return publicUrlData.publicUrl;
+  
+    return `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/property-images/${filePath}`;
   };
 
   const addProperty = async () => {
-    if (!userId) return;
-
+    if (!userId || !agentId) return;
+  
     const imageUrl = await handleImageUpload();
-
+  
     if (!imageUrl) {
       alert("Image upload failed. Please try again.");
       return;
     }
-
+  
+    console.log("Image uploaded:", imageUrl);
+  
     const { data, error } = await supabase.from("properties").insert([
       {
         title,
         description,
         price,
         type,
-        owner_id: userId,
+        owner_id: userId, // ✅ Seller ID
+        added_by: agentId, // ✅ Agent ID
+        status: "pending", // ✅ Ensure it's pending approval
         image_url: imageUrl,
         square_feet: squareFeet,
         address,
@@ -95,9 +107,14 @@ export default function AgentDashboard() {
         longitude,
       },
     ]);
-
-    if (error) console.error("Property insert error:", error);
-    else setProperties([...properties, data![0]]);
+  
+    if (error) {
+      console.error("Property insert error:", error);
+      alert("Error adding property.");
+    } else {
+      alert("Property added successfully! Waiting for admin approval.");
+      setProperties([...properties, data![0]]);
+    }
   };
 
   return (

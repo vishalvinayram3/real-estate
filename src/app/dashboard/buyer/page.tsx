@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import { supabase } from "../../../lib/supabase";
 import PropertyCard from "../../../components/PropertyCard";
 import { Property, Role } from "../../../types/property";
-import ProtectedRoute from "@/components/ProtectedRoute";
 
 export default function BuyerDashboard() {
   const [properties, setProperties] = useState<Property[]>([]);

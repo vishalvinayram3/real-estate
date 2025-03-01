@@ -4,6 +4,8 @@ import { useState, useEffect } from "react";
 import { supabase } from "../../../lib/supabase";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import { Role } from "@/types/property";
+import { generateRandomPassword } from "@/utils/passwordUtils"; // A helper function to generate passwords
+
 
 export default function SellerDashboard() {
   const [pendingProperties, setPendingProperties] = useState([]);
@@ -15,12 +17,29 @@ export default function SellerDashboard() {
 
   useEffect(() => {
     const fetchUser = async () => {
-      const { data } = await supabase.auth.getUser();
-      if (data?.user) {
-        setUserId(data.user.id);
-        fetchProperties(data.user.id);
-        fetchAgents(data.user.id);
+      const { data, error } = await supabase.auth.getUser();
+  
+      if (!data?.user) {
+        console.error("User not authenticated.");
+        return;
       }
+  
+      // ✅ Fetch seller's ID from `users` table instead of `auth.users`
+      const { data: sellerData, error: sellerError } = await supabase
+        .from("users")
+        .select("id")
+        .eq("email", data.user.email)
+        .single();
+  
+      if (sellerError || !sellerData) {
+        console.error("Error fetching seller ID:", sellerError || "No admin found.");
+        return;
+      }
+  
+      console.log("Fetched Seller ID:", sellerData.id); // Debugging
+      setUserId(sellerData.id);
+      fetchAgents(sellerData.id);
+      fetchProperties(sellerData.id) // ✅ Store the correct seller ID
     };
 
     const fetchProperties = async (sellerId: string) => {
@@ -58,17 +77,69 @@ export default function SellerDashboard() {
   };
 
   // ✅ Function to add a new agent
+  
   const addAgent = async () => {
     if (!userId || !agentEmail) return;
-
-    const { data, error } = await supabase.from("agents").insert([{ seller_id: userId, agent_email: agentEmail }]);
+  
+    // Generate a random password for the agent
+    const password = agentEmail;
+  
+    // Step 1: Create Agent in Supabase Auth
+    const { data: authData, error: authError } = await supabase.auth.signUp({
+      email: agentEmail,
+      password: password,
+    });
+  
+    if (authError) {
+      console.error("Error creating agent account:", authError);
+      alert("Failed to create agent account. Email may already be in use.");
+      return;
+    }
+  
+    const agentId = authData.user?.id;
+    if (!agentId) {
+      alert("Unexpected error: User ID not generated.");
+      return;
+    }
+  
+    // Step 2: Insert Agent into `users` Table
+    const { error: userError } = await supabase.from("users").insert([
+      { id: agentId, email: agentEmail, role: "agent" },
+    ]);
+  
+    if (userError) {
+      console.error("Error inserting agent into users table:", userError);
+      alert("Failed to register agent in the users database.");
+      return;
+    }
+  
+    // Step 3: Link Agent to Seller in `agents` Table
+    const { error: agentError } = await supabase.from("agents").insert([
+      { seller_id: userId, agent_email: agentEmail, id: agentId },
+    ]);
+  
+    if (agentError) {
+      console.error("Error linking agent to seller:", agentError);
+      alert("Failed to link agent to seller.");
+      return;
+    }
+  
+    // Update UI
+    setAgents((prev) => [...prev, { id: agentId, agent_email: agentEmail }]);
+    setAgentEmail("");
+  
+    alert(`Agent added successfully! Temporary password: ${password}`);
+  };
+  
+  // ✅ Function to delete an agent
+  const deleteAgent = async (agentId: string) => {
+    const { error } = await supabase.from("agents").delete().eq("id", agentId);
 
     if (error) {
-      console.error("Error adding agent:", error);
-      alert("Failed to add agent. Ensure email is unique.");
+      console.error("Error deleting agent:", error);
+      alert("Failed to delete agent.");
     } else {
-      setAgents([...agents, data![0]]);
-      setAgentEmail("");
+      setAgents((prev) => prev.filter((agent) => agent.id !== agentId));
     }
   };
 
@@ -89,7 +160,7 @@ export default function SellerDashboard() {
             className={`p-3 ml-6 ${activeTab === "agents" ? "border-b-2 border-blue-600 text-blue-600" : "text-gray-500"}`}
             onClick={() => setActiveTab("agents")}
           >
-            Agents
+            Seller
           </button>
         </div>
 
@@ -139,7 +210,7 @@ export default function SellerDashboard() {
         {/* Agents Tab */}
         {activeTab === "agents" && (
           <div className="bg-white p-6 shadow-md rounded-lg">
-            <h2 className="text-xl font-semibold mb-4">Manage Agents</h2>
+            <h2 className="text-xl font-semibold mb-4">Manage Sellers</h2>
 
             {/* Add Agent Section */}
             <div className="mb-6">
@@ -151,20 +222,28 @@ export default function SellerDashboard() {
                 className="border p-2 w-full mb-2"
               />
               <button onClick={addAgent} className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
-                Add Agent
+                Add Seller
               </button>
             </div>
 
             {/* Agents List */}
-            <h2 className="text-xl font-semibold mb-4">Your Agents</h2>
+            <h2 className="text-xl font-semibold mb-4">Your Seller</h2>
             {agents.length > 0 ? (
               <ul className="bg-white p-4 shadow-md rounded-lg">
                 {agents.map((agent) => (
-                  <li key={agent.id} className="border-b py-2">{agent.agent_email}</li>
+                  <li key={agent.id} className="border-b py-2 flex justify-between">
+                    {agent.agent_email}
+                    <button
+                      onClick={() => deleteAgent(agent.id)}
+                      className="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700"
+                    >
+                      Delete
+                    </button>
+                  </li>
                 ))}
               </ul>
             ) : (
-              <p className="text-gray-600">No agents added yet.</p>
+              <p className="text-gray-600">No seller added yet.</p>
             )}
           </div>
         )}
