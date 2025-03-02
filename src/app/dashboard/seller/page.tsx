@@ -3,21 +3,21 @@
 import { useState, useEffect } from "react";
 import { supabase } from "../../../lib/supabase";
 import ProtectedRoute from "@/components/ProtectedRoute";
-import { Role } from "@/types/property";
-import { generateRandomPassword } from "@/utils/passwordUtils"; // A helper function to generate passwords
+import { Property, Role } from "@/types/property";
 
 
 export default function SellerDashboard() {
-  const [pendingProperties, setPendingProperties] = useState([]);
-  const [approvedProperties, setApprovedProperties] = useState([]);
-  const [agents, setAgents] = useState([]);
+  const [pendingProperties, setPendingProperties] = useState<Property[]>([]);
+  const [approvedProperties, setApprovedProperties] = useState<Property[]>([]);
+
+  const [agents, setAgents] = useState<{ id: string; agent_email: string }[]>([]);
   const [agentEmail, setAgentEmail] = useState("");
   const [userId, setUserId] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<"properties" | "agents">("properties");
 
   useEffect(() => {
     const fetchUser = async () => {
-      const { data, error } = await supabase.auth.getUser();
+      const { data} = await supabase.auth.getUser();
   
       if (!data?.user) {
         console.error("User not authenticated.");
@@ -56,7 +56,11 @@ export default function SellerDashboard() {
       const { data, error } = await supabase.from("agents").select("*").eq("seller_id", sellerId);
       if (error) {
         console.error("Error fetching agents:", error);
-      } else {
+      }
+      if(data == null) {
+      return;
+    }
+      else {
         setAgents(data);
       }
     };
@@ -72,7 +76,11 @@ export default function SellerDashboard() {
       alert("Failed to approve property.");
     } else {
       setPendingProperties((prev) => prev.filter((p) => p.id !== id));
-      setApprovedProperties((prev) => [...prev, pendingProperties.find((p) => p.id === id)]);
+      setApprovedProperties((prev) => {
+        const foundProperty = pendingProperties.find((p) => p.id === id);
+        return foundProperty ? [...prev, foundProperty] : prev; // ✅ Ensures no undefined values
+      });
+      
     }
   };
 

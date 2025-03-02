@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { supabase } from "../../../lib/supabase";
 import { useRouter } from "next/navigation";
-import ProtectedRoute from "@/components/ProtectedRoute";
 import Link from "next/link";
 
 export default function Login() {
@@ -14,22 +13,26 @@ export default function Login() {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-
+    if(data== null)
+    {
+      return;
+    }
     if (error) {
       alert(error.message);
     } else {
       // Check if the user is an agent or seller
-      const { data: agentData, error: agentError } = await supabase
+      const { data: agentData, error} = await supabase
         .from("agents")
         .select("*")
         .eq("agent_email", email)
         .single();
-
+      if(error) { alert(error.message)}
       if (agentData) {
         router.push("/dashboard/agent"); // Redirect agents to their dashboard
       } else {
         router.push("/dashboard/seller"); // Redirect sellers to their dashboard
       }
+
     }
   };
 

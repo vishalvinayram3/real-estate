@@ -5,11 +5,12 @@ import { useParams } from "next/navigation";
 import { supabase } from "../../../lib/supabase";
 import Image from "next/image";
 import ProtectedRoute, { Role } from "@/components/ProtectedRoute";
+import { Property } from "@/types/property";
 
 export default function PropertyDetailPage() {
   const params = useParams();
   const id = params?.id;
-  const [property, setProperty] = useState<any>(null);
+  const [property, setProperty] = useState<Property>();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 

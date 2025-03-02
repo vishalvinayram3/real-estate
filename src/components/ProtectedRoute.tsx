@@ -18,6 +18,7 @@ export default function ProtectedRoute({ role, children }: { role: Role; childre
   useEffect(() => {
     const checkUserRole = async () => {
       const { data, error } = await supabase.auth.getUser();
+      if(error) return;
       if (!data?.user) {
         console.log("No authenticated user found. Redirecting to login.");
         router.push("/auth/login");

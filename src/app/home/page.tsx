@@ -1,16 +1,12 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carousel";
 import { HomeIcon, BuildingOfficeIcon, GlobeAltIcon } from "@heroicons/react/24/outline";
-import { useEffect, useRef } from "react";
 import "swiper/css";
 import "swiper/css/navigation";
 import { Facebook, Twitter, Linkedin, Instagram, MapIcon } from "lucide-react";

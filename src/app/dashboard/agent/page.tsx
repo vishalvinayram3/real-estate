@@ -2,12 +2,11 @@
 
 import { useState, useEffect } from "react";
 import { supabase } from "../../../lib/supabase";
-import { useRouter } from "next/navigation";
 import ProtectedRoute from "@/components/ProtectedRoute";
-import { Role } from "@/types/property";
+import { Property, Role } from "@/types/property";
 
 export default function AgentDashboard() {
-  const [properties, setProperties] = useState([]);
+  const [properties, setProperties] = useState<Property[]>([]);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState<number>(0);
@@ -23,12 +22,12 @@ export default function AgentDashboard() {
   const [userId, setUserId] = useState<string | null>(null);
   const [agentId, setAgentId] = useState<string | null>(null);
 
-  const router = useRouter();
 
   useEffect(() => {
     const fetchAgent = async () => {
       const { data, error } = await supabase.auth.getUser();
       if (!data?.user) {
+        console.log(error)
         console.error("User not authenticated.");
         return;
       }
@@ -67,9 +66,11 @@ export default function AgentDashboard() {
     const filePath = `property-images/${fileName}`;
   
     const { data, error } = await supabase.storage.from("property-images").upload(filePath, image);
-  
+
+    console.log(data);
     if (error) {
       console.error("Image Upload Error:", error);
+      console.log(setType)
       return null;
     }
   

@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react";
 import { supabase } from "../../lib/supabase";
 import { Property } from "../../types/property";
-import { useRouter } from "next/navigation";
 import PropertyCard from "@/components/PropertyCard";
 import Navbar from "@/components/Navbar";
 
@@ -12,12 +11,12 @@ export default function Properties() {
   const [filter, setFilter] = useState<"rent" | "sell">("rent"); // Default filter
   const [userId, setUserId] = useState<string | null>(null);
   const [userRole, setUserRole] = useState<string | null>(null);
-  const router = useRouter();
 
 
 
   useEffect(() => {
     const fetchProperties = async () => {
+      setUserRole("buyer")
       let query = supabase.from("properties").select("*").eq("status", "approved");
 
       if (userRole === "buyer") {
@@ -25,6 +24,7 @@ export default function Properties() {
       } else if (userRole === "seller" && userId) {
         query = query.eq("owner_id", userId);
       }
+      setUserId(userId)
 
       const { data, error } = await query;
       if (error) console.error("Error fetching properties:", error);
