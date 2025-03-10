@@ -27,7 +27,6 @@ export default function AgentDashboard() {
     const fetchAgent = async () => {
       const { data, error } = await supabase.auth.getUser();
       if (!data?.user) {
-        console.log(error)
         console.error("User not authenticated.");
         return;
       }
