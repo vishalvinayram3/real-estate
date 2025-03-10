@@ -4,6 +4,7 @@ import { useState } from "react";
 import { supabase } from "../../../lib/supabase";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { Button } from "@/components/ui/button";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -43,8 +44,10 @@ export default function Login() {
         <input type="email" placeholder="Email" onChange={(e) => setEmail(e.target.value)} className="border p-2 w-full mb-2" required />
         <input type="password" placeholder="Password" onChange={(e) => setPassword(e.target.value)} className="border p-2 w-full mb-2" required />
         <button type="submit" className="bg-blue-600 text-white p-2 w-full rounded hover:bg-blue-700">Login</button>
-        <Link href={'/auth/register'} >Register </Link>
-
+        <div className="flex justify-evenly mt-5">
+        <Link href={'/auth/register'}>Register </Link>
+        <Link href={'/auth/reset-pin'} >Forgot Password </Link> 
+        </div>
       </form>
     </div>
   );

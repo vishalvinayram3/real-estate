@@ -29,6 +29,7 @@ export default function Properties() {
       const { data, error } = await query;
       if (error) console.error("Error fetching properties:", error);
       if (data) setProperties(data);
+      console.log(data)
     };
 
     fetchProperties();

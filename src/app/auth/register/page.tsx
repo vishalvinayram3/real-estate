@@ -27,20 +27,20 @@ export default function Register() {
       { id: data.user?.id, email, role }
     ]);
 
-    if (userError) {
-      console.error("Error inserting user role:", userError);
-      alert("Registration failed. Please try again.");
-      return;
-    }
-
+    // if (userError) {
+    //   console.error("Error inserting user role:", userError);
+    //   alert(`Registration failed. Please try again due to ${userError.cause}`);
+    //   return;
+    // }
+    router.push('/auth/login')
     // Redirect based on role
-    if (role === Role.Seller) {
-      router.push("/dashboard/seller");
-    } else if (role === Role.Agent) {
-      router.push("/dashboard/agent");
-    } else {
-      router.push("/dashboard/buyer");
-    }
+    // if (role === Role.Seller) {
+    //   router.push("/dashboard/seller");
+    // } else if (role === Role.Agent) {
+    //   router.push("/dashboard/agent");
+    // } else {
+    //   router.push("/dashboard/buyer");
+    // }
   };
 
   return (

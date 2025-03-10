@@ -10,10 +10,11 @@ const nextConfig = {
     ];
   },
   images: {
+    domains: ['njkdtjgciebwytrbblbt.supabase.co'],
     remotePatterns: [
       {
         protocol: "https",
-        hostname: "images.unsplash.com",
+        hostname: "*",
       },
     ],
   },

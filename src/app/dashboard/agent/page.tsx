@@ -18,10 +18,9 @@ export default function AgentDashboard() {
   const [bathrooms, setBathrooms] = useState<number>(0);
   const [latitude, setLatitude] = useState<number | null>(null);
   const [longitude, setLongitude] = useState<number | null>(null);
-  const [image, setImage] = useState<File | null>(null);
+  const [images, setImages] = useState<FileList | null>(null);
   const [userId, setUserId] = useState<string | null>(null);
   const [agentId, setAgentId] = useState<string | null>(null);
-
 
   useEffect(() => {
     const fetchAgent = async () => {
@@ -30,27 +29,31 @@ export default function AgentDashboard() {
         console.error("User not authenticated.");
         return;
       }
-  
+
       const { data: agentData, error: agentError } = await supabase
-        .from("users")
+        .from("agents")
         .select("id, seller_id")
-        .eq("email", data.user.email)
+        .eq("id", data.user.id)
         .single();
-  
+
       if (agentError || !agentData) {
         console.error("Error fetching agent:", agentError || "No seller found with this email.");
         return;
       }
-  
+
       setAgentId(agentData.id);
       setUserId(agentData.seller_id);
       fetchProperties(agentData.id);
     };
-  
+
     fetchAgent();
   }, []);
   const fetchProperties = async (id: string) => {
-    const { data, error } = await supabase.from("properties").select("*").eq("added_by", id);
+    const { data, error } = await supabase
+      .from("properties")
+      .select("*")
+      .eq("added_by", id);
+
     if (error) {
       console.error("Error fetching properties:", error);
     } else {
@@ -59,45 +62,57 @@ export default function AgentDashboard() {
   };
 
   const handleImageUpload = async () => {
-    if (!image) return null;
-  
-    const fileName = `${Date.now()}-${image.name}`;
-    const filePath = `property-images/${fileName}`;
-  
-    const { data, error } = await supabase.storage.from("property-images").upload(filePath, image);
+    if (!images || images.length === 0) return [];
+    // ✅ Limit uploads to 3 files
+    const uploadedUrls: string[] = [];
+    const files = Array.from(images).slice(0, 3);
 
-    console.log(data);
-    if (error) {
-      console.error("Image Upload Error:", error);
-      console.log(setType)
-      return null;
+    for (const file of files) {
+      const fileName = `${Date.now()}-${file.name}`;
+      const filePath = `property-images/${fileName}`;
+
+      const { data, error } = await supabase.storage
+        .from("property-images")
+        .upload(filePath, file);
+
+      if (error) {
+        console.error("Image Upload Error:", error);
+        continue;
+      }
+
+      uploadedUrls.push(
+        `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/property-images/${filePath}`
+      );
+      console.log(uploadedUrls)
     }
-  
-    return `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/property-images/${filePath}`;
+
+    return uploadedUrls;
   };
 
+  // ✅ Updated to store multiple image URLs
   const addProperty = async () => {
-    if (!userId || !agentId) return;
-  
-    const imageUrl = await handleImageUpload();
-  
-    if (!imageUrl) {
-      alert("Image upload failed. Please try again.");
+    if (!userId || !agentId) {
+      alert("User not authenticated. Please refresh and try again.");
       return;
     }
-  
-    console.log("Image uploaded:", imageUrl);
-  
-    const { data, error } = await supabase.from("properties").insert([
+
+    const imageUrls = await handleImageUpload();
+    console.log(imageUrls)
+
+    if (imageUrls.length === 0) {
+      alert("Please upload at least one image.");
+      return;
+    }
+
+    const { error } = await supabase.from("properties").insert([
       {
         title,
         description,
         price,
         type,
-        owner_id: userId, // ✅ Seller ID
-        added_by: agentId, // ✅ Agent ID
-        status: "pending", // ✅ Ensure it's pending approval
-        image_url: imageUrl,
+        owner_id: userId,
+        added_by: agentId,
+        image_url: imageUrls, // ✅ Save array of image URLs
         square_feet: squareFeet,
         address,
         nearby,
@@ -105,51 +120,70 @@ export default function AgentDashboard() {
         bathrooms,
         latitude,
         longitude,
+        status: "pending", // Property is pending approval
       },
     ]);
-  
+
     if (error) {
       console.error("Property insert error:", error);
-      alert("Error adding property.");
+      alert("Error adding property. Please try again.");
     } else {
-      alert("Property added successfully! Waiting for admin approval.");
-      setProperties([...properties, data![0]]);
+      alert("Property added successfully! Pending seller approval.");
+      fetchProperties(agentId);
     }
   };
 
   return (
-<ProtectedRoute role={Role.Agent}>
-    <div className="p-6 mt-10">
-      <h1 className="text-3xl font-bold text-gray-900 mb-4">Your Properties</h1>
+    <ProtectedRoute role={Role.Agent}>
+      <div className="p-6 mt-10 max-w-5xl mx-auto">
+        <h1 className="text-3xl font-bold text-gray-900 mb-6">Agent Dashboard</h1>
 
-      <div className="bg-white p-6 rounded-lg shadow-md mb-6">
-        <h2 className="text-xl font-semibold mb-4">Add New Property</h2>
-        <input type="text" placeholder="Title" onChange={(e) => setTitle(e.target.value)} className="border p-2 w-full mb-2" />
-        <textarea placeholder="Description" onChange={(e) => setDescription(e.target.value)} className="border p-2 w-full mb-2"></textarea>
-        <input type="number" placeholder="Price" onChange={(e) => setPrice(Number(e.target.value))} className="border p-2 w-full mb-2" />
-        <input type="number" placeholder="Square Feet" onChange={(e) => setSquareFeet(Number(e.target.value))} className="border p-2 w-full mb-2" />
-        <textarea placeholder="Address" onChange={(e) => setAddress(e.target.value)} className="border p-2 w-full mb-2"></textarea>
-        <textarea placeholder="Nearby Landmarks" onChange={(e) => setNearby(e.target.value)} className="border p-2 w-full mb-2"></textarea>
-        <input type="number" placeholder="Bedrooms" onChange={(e) => setBedrooms(Number(e.target.value))} className="border p-2 w-full mb-2" />
-        <input type="number" placeholder="Bathrooms" onChange={(e) => setBathrooms(Number(e.target.value))} className="border p-2 w-full mb-2" />
-        <input type="number" placeholder="Latitude" onChange={(e) => setLatitude(Number(e.target.value))} className="border p-2 w-full mb-2" />
-        <input type="number" placeholder="Longitude" onChange={(e) => setLongitude(Number(e.target.value))} className="border p-2 w-full mb-2" />
-        <input type="file" accept="image/*" onChange={(e) => setImage(e.target.files?.[0] || null)} className="border p-2 w-full mb-2" />
-        <button onClick={addProperty} className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Add Property</button>
+        {/* Add Property Section */}
+        <div className="bg-white p-6 rounded-lg shadow-md mb-6">
+          <h2 className="text-xl font-semibold mb-4">Add New Property</h2>
+          <input type="text" placeholder="Title" onChange={(e) => setTitle(e.target.value)} className="border p-2 w-full mb-2" />
+          <textarea placeholder="Description" onChange={(e) => setDescription(e.target.value)} className="border p-2 w-full mb-2" />
+          <input type="number" placeholder="Price" onChange={(e) => setPrice(Number(e.target.value))} className="border p-2 w-full mb-2" />
+          <input type="number" placeholder="Square Feet" onChange={(e) => setSquareFeet(Number(e.target.value))} className="border p-2 w-full mb-2" />
+          <textarea placeholder="Address" onChange={(e) => setAddress(e.target.value)} className="border p-2 w-full mb-2" />
+          <textarea placeholder="Nearby Landmarks" onChange={(e) => setNearby(e.target.value)} className="border p-2 w-full mb-2" />
+          <input type="number" placeholder="Bedrooms" onChange={(e) => setBedrooms(Number(e.target.value))} className="border p-2 w-full mb-2" />
+          <input type="number" placeholder="Bathrooms" onChange={(e) => setBathrooms(Number(e.target.value))} className="border p-2 w-full mb-2" />
+          <input type="number" placeholder="Latitude" onChange={(e) => setLatitude(Number(e.target.value))} className="border p-2 w-full mb-2" />
+          <input type="number" placeholder="Longitude" onChange={(e) => setLongitude(Number(e.target.value))} className="border p-2 w-full mb-2" />
+          
+          {/* ✅ Multiple File Upload (Limit to 3) */}
+          <input
+            type="file"
+            accept="image/*"
+            multiple
+            onChange={(e) => setImages(e.target.files)}
+            className="border p-2 w-full mb-2"
+          />
+
+          <button onClick={addProperty} className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+            Add Property
+          </button>
+        </div>
+
+        {/* List of Properties Added by Agent */}
+        <h2 className="text-xl font-semibold mt-6 mb-4">Your Added Properties</h2>
+        {properties.length > 0 ? (
+          <ul className="bg-white p-4 shadow-md rounded-lg">
+            {properties.map((property) => (
+              <li key={property.id} className="border-b py-2 flex justify-between items-center">
+                <span>{property.title} - 
+                  <span className={property.status === "approved" ? "text-green-600 ml-2" : "text-red-600 ml-2"}>
+                    {property.status}
+                  </span>
+                </span>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p className="text-gray-600">No properties added yet.</p>
+        )}
       </div>
-      <h2 className="text-xl font-semibold mt-6 mb-4">Your Properties</h2>
-      {properties.length > 0 ? (
-        <ul className="bg-white p-4 shadow-md rounded-lg">
-          {properties.map((property) => (
-            <li key={property.id} className="border-b py-2">
-              {property.title} - <span className={property.status === "approved" ? "text-green-600" : "text-red-600"}>{property.status}</span>
-            </li>
-          ))}
-        </ul>
-      ) : (
-        <p className="text-gray-600">No properties added yet.</p>
-      )}
-    </div>
     </ProtectedRoute>
   );
 }
