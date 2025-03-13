@@ -2,132 +2,82 @@
 
 import { useState } from "react";
 import { supabase } from "../../../lib/supabase";
+import { useRouter } from "next/navigation";
 
-export default function ResetPinPage() {
+export default function ResetPasswordPage() {
+  const router = useRouter();
   const [email, setEmail] = useState("");
-  const [otp, setOtp] = useState("");
-  const [newPin, setNewPin] = useState("");
-  const [step, setStep] = useState(1);
-  const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState<string | null>(null);
+  const [newPassword, setNewPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
 
-  // ✅ Step 1: Send OTP
-  const sendOtp = async () => {
-    setMessage(null);
-    setError(null);
+  const handleResetPassword = async () => {
     setLoading(true);
-
-    const { error } = await supabase.auth.s
-
-    setLoading(false);
-
-    if (error) {
-      setError("Failed to send OTP. Please check your email and try again.");
-    } else {
-      setMessage("An OTP has been sent to your email.");
-      setStep(2);
-    }
-  };
-
-  // ✅ Step 2: Verify OTP and Reset PIN
-  const verifyOtpAndSetPin = async () => {
-    setMessage(null);
     setError(null);
-    setLoading(true);
+    setSuccess(null);
 
-    // ✅ Verify OTP
-    const { error } = await supabase.auth.verifyOtp({
+    // ✅ Try to sign in first to reset the password
+    const { data, error } = await supabase.auth.signInWithPassword({
       email,
-      token: otp,
-      type: "email",
+      password: newPassword,
     });
 
     if (error) {
-      setError("Invalid OTP. Please try again.");
+      setError("Invalid credentials or user not found.");
       setLoading(false);
       return;
     }
 
-    // ✅ Update Password (or PIN) after OTP is verified
+    // ✅ Directly update the password
     const { error: updateError } = await supabase.auth.updateUser({
-      password: newPin,
+      password: newPassword,
     });
 
-    setLoading(false);
-
     if (updateError) {
-      setError("Failed to update PIN. Please try again.");
+      setError(updateError.message);
     } else {
-      setMessage("PIN has been reset successfully. Redirecting to login...");
+      setSuccess("Password updated successfully! Redirecting to login...");
       setTimeout(() => {
-        window.location.href = "/auth/login"; // ✅ Redirect after success
+        router.push("/auth/login");
       }, 2000);
     }
+
+    setLoading(false);
   };
 
   return (
     <div className="max-w-md mx-auto mt-20 p-6 bg-white shadow-lg rounded-lg">
-      {step === 1 && (
-        <>
-          <h1 className="text-2xl font-bold text-gray-900 mb-4">Reset PIN</h1>
-          <p className="text-gray-600 mb-4">
-            Enter your email to receive a one-time password (OTP).
-          </p>
+      <h2 className="text-2xl font-bold mb-4">Reset Password</h2>
 
-          <input
-            type="email"
-            placeholder="Enter your email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="border p-2 w-full mb-3 rounded-md"
-          />
+      <input
+        type="email"
+        placeholder="Email"
+        className="border p-2 w-full mb-3 rounded-md"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+      />
 
-          <button
-            onClick={sendOtp}
-            className="bg-blue-600 text-white px-4 py-2 w-full rounded hover:bg-blue-700 transition"
-            disabled={loading}
-          >
-            {loading ? "Sending..." : "Send OTP"}
-          </button>
-        </>
-      )}
+      <input
+        type="password"
+        placeholder="New Password"
+        className="border p-2 w-full mb-3 rounded-md"
+        value={newPassword}
+        onChange={(e) => setNewPassword(e.target.value)}
+      />
 
-      {step === 2 && (
-        <>
-          <h1 className="text-2xl font-bold text-gray-900 mb-4">Verify OTP</h1>
-          <p className="text-gray-600 mb-4">
-            Enter the OTP sent to your email and set a new PIN.
-          </p>
+      <button
+        onClick={handleResetPassword}
+        className={`bg-blue-600 text-white px-4 py-2 w-full rounded hover:bg-blue-700 ${
+          loading ? "opacity-50" : ""
+        }`}
+        disabled={loading}
+      >
+        {loading ? "Resetting..." : "Reset Password"}
+      </button>
 
-          <input
-            type="text"
-            placeholder="Enter OTP"
-            value={otp}
-            onChange={(e) => setOtp(e.target.value)}
-            className="border p-2 w-full mb-3 rounded-md"
-          />
-
-          <input
-            type="password"
-            placeholder="New PIN"
-            value={newPin}
-            onChange={(e) => setNewPin(e.target.value)}
-            className="border p-2 w-full mb-3 rounded-md"
-          />
-
-          <button
-            onClick={verifyOtpAndSetPin}
-            className="bg-blue-600 text-white px-4 py-2 w-full rounded hover:bg-blue-700 transition"
-            disabled={loading}
-          >
-            {loading ? "Resetting..." : "Reset PIN"}
-          </button>
-        </>
-      )}
-
-      {message && <p className="text-green-600 mt-3">{message}</p>}
-      {error && <p className="text-red-600 mt-3">{error}</p>}
+      {error && <p className="text-red-500 mt-3">{error}</p>}
+      {success && <p className="text-green-500 mt-3">{success}</p>}
     </div>
   );
 }
