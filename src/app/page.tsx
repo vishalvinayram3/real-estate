@@ -15,11 +15,11 @@ export default function Properties() {
 
   // Filters
   const [searchQuery, setSearchQuery] = useState("");
-  const [priceRange, setPriceRange] = useState({ min: 0, max: 1000000 });
+  const [priceRange, setPriceRange] = useState({ min: 0, max: 10000000000 });
   const [location, setLocation] = useState("");
   const [bedrooms, setBedrooms] = useState<number | null>(null);
   const [bathrooms, setBathrooms] = useState<number | null>(null);
-  const [squareFeet, setSquareFeet] = useState({ min: 0, max: 5000 });
+  const [squareFeet, setSquareFeet] = useState({ min: 0, max: 50000000 });
 
   useEffect(() => {
     const fetchUser = async () => {

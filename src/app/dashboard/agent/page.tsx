@@ -3,21 +3,20 @@
 import { useState, useEffect } from "react";
 import { supabase } from "../../../lib/supabase";
 import ProtectedRoute from "@/components/ProtectedRoute";
-import { Property, Role } from "@/types/property";
+import { Property, Role } from "../../../types/property";
 
 export default function AgentDashboard() {
   const [properties, setProperties] = useState<Property[]>([]);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState<number>(0);
-  const [type, setType] = useState<"buy" | "sell" | "rent">("sell");
+  const [type, setType] = useState<"buy" | "rent" | "sell">("sell");
   const [squareFeet, setSquareFeet] = useState<number>(0);
   const [address, setAddress] = useState("");
   const [nearby, setNearby] = useState("");
   const [bedrooms, setBedrooms] = useState<number>(0);
   const [bathrooms, setBathrooms] = useState<number>(0);
-  const [latitude, setLatitude] = useState<number | null>(null);
-  const [longitude, setLongitude] = useState<number | null>(null);
+  const [mapUrl, setMapUrl] = useState<string>("");
   const [images, setImages] = useState<FileList | null>(null);
   const [userId, setUserId] = useState<string | null>(null);
   const [agentId, setAgentId] = useState<string | null>(null);
@@ -48,32 +47,22 @@ export default function AgentDashboard() {
 
     fetchAgent();
   }, []);
-  const fetchProperties = async (id: string) => {
-    const { data, error } = await supabase
-      .from("properties")
-      .select("*")
-      .eq("added_by", id);
 
-    if (error) {
-      console.error("Error fetching properties:", error);
-    } else {
-      setProperties(data);
-    }
+  const fetchProperties = async (id: string) => {
+    const { data, error } = await supabase.from("properties").select("*").eq("added_by", id);
+    if (error) console.error("Error fetching properties:", error);
+    else setProperties(data);
   };
 
   const handleImageUpload = async () => {
     if (!images || images.length === 0) return [];
-    // ✅ Limit uploads to 3 files
+
     const uploadedUrls: string[] = [];
-    const files = Array.from(images).slice(0, 3);
 
-    for (const file of files) {
+    for (let i = 0; i < Math.min(images.length, 3); i++) {
+      const file = images[i];
       const fileName = `${Date.now()}-${file.name}`;
-      const filePath = `property-images/${fileName}`;
-
-      const { data, error } = await supabase.storage
-        .from("property-images")
-        .upload(filePath, file);
+      const { data, error } = await supabase.storage.from("property-images").upload(fileName, file);
 
       if (error) {
         console.error("Image Upload Error:", error);
@@ -112,15 +101,14 @@ export default function AgentDashboard() {
         type,
         owner_id: userId,
         added_by: agentId,
-        image_url: imageUrls, // ✅ Save array of image URLs
+        images: imageUrls,
         square_feet: squareFeet,
         address,
         nearby,
         bedrooms,
         bathrooms,
-        latitude,
-        longitude,
-        status: "pending", // Property is pending approval
+        map_url: mapUrl, // ✅ Storing map URL directly
+        status: "pending",
       },
     ]);
 
@@ -138,21 +126,51 @@ export default function AgentDashboard() {
       <div className="p-6 mt-10 max-w-5xl mx-auto">
         <h1 className="text-3xl font-bold text-gray-900 mb-6">Agent Dashboard</h1>
 
-        {/* Add Property Section */}
+        {/* ✅ Add Property Form */}
         <div className="bg-white p-6 rounded-lg shadow-md mb-6">
           <h2 className="text-xl font-semibold mb-4">Add New Property</h2>
           <input type="text" placeholder="Title" onChange={(e) => setTitle(e.target.value)} className="border p-2 w-full mb-2" />
-          <textarea placeholder="Description" onChange={(e) => setDescription(e.target.value)} className="border p-2 w-full mb-2" />
+          <textarea placeholder="Description" onChange={(e) => setDescription(e.target.value)} className="border p-2 w-full mb-2"></textarea>
+
+          {/* ✅ Type Selection (rent, sell) */}
+          <select
+            value={type}
+            onChange={(e) => setType(e.target.value as "rent" | "sell")}
+            className="border p-2 w-full mb-2"
+          >
+            <option value="sell">Sell</option>
+            <option value="rent">Rent</option>
+          </select>
+
           <input type="number" placeholder="Price" onChange={(e) => setPrice(Number(e.target.value))} className="border p-2 w-full mb-2" />
           <input type="number" placeholder="Square Feet" onChange={(e) => setSquareFeet(Number(e.target.value))} className="border p-2 w-full mb-2" />
-          <textarea placeholder="Address" onChange={(e) => setAddress(e.target.value)} className="border p-2 w-full mb-2" />
-          <textarea placeholder="Nearby Landmarks" onChange={(e) => setNearby(e.target.value)} className="border p-2 w-full mb-2" />
+          <textarea placeholder="Address" onChange={(e) => setAddress(e.target.value)} className="border p-2 w-full mb-2"></textarea>
+          <textarea placeholder="Nearby Landmarks" onChange={(e) => setNearby(e.target.value)} className="border p-2 w-full mb-2"></textarea>
           <input type="number" placeholder="Bedrooms" onChange={(e) => setBedrooms(Number(e.target.value))} className="border p-2 w-full mb-2" />
           <input type="number" placeholder="Bathrooms" onChange={(e) => setBathrooms(Number(e.target.value))} className="border p-2 w-full mb-2" />
-          <input type="number" placeholder="Latitude" onChange={(e) => setLatitude(Number(e.target.value))} className="border p-2 w-full mb-2" />
-          <input type="number" placeholder="Longitude" onChange={(e) => setLongitude(Number(e.target.value))} className="border p-2 w-full mb-2" />
-          
-          {/* ✅ Multiple File Upload (Limit to 3) */}
+
+          {/* ✅ Map URL */}
+          <input
+            type="text"
+            placeholder="Google Maps URL"
+            value={mapUrl}
+            onChange={(e) => setMapUrl(e.target.value)}
+            className="border p-2 w-full mb-2"
+          />
+
+          {/* ✅ Google Map Preview */}
+          {mapUrl && (
+            <iframe
+              src={mapUrl}
+              width="100%"
+              height="200"
+              className="rounded-lg border mt-2"
+              loading="lazy"
+              allowFullScreen
+            />
+          )}
+
+          {/* ✅ Image Upload */}
           <input
             type="file"
             accept="image/*"
@@ -166,16 +184,15 @@ export default function AgentDashboard() {
           </button>
         </div>
 
-        {/* List of Properties Added by Agent */}
+        {/* ✅ List of Properties */}
         <h2 className="text-xl font-semibold mt-6 mb-4">Your Added Properties</h2>
         {properties.length > 0 ? (
           <ul className="bg-white p-4 shadow-md rounded-lg">
             {properties.map((property) => (
-              <li key={property.id} className="border-b py-2 flex justify-between items-center">
-                <span>{property.title} - 
-                  <span className={property.status === "approved" ? "text-green-600 ml-2" : "text-red-600 ml-2"}>
-                    {property.status}
-                  </span>
+              <li key={property.id} className="border-b py-2">
+                {property.title} - 
+                <span className={property.status === "approved" ? "text-green-600 ml-2" : "text-red-600 ml-2"}>
+                  {property.status}
                 </span>
               </li>
             ))}

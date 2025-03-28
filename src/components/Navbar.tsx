@@ -30,7 +30,7 @@ export default function Navbar() {
       <div className="flex space-x-4">
         {user ? (
           <>
-            <span className="text-gray-700">{user.email}</span>
+            <span className="text-gray-700">{}</span>
             <LogoutButton />
           </>
         ) : (

@@ -13,10 +13,14 @@ import { Facebook, Twitter, Linkedin, Instagram, MapIcon } from "lucide-react";
 import "swiper/css/pagination";
 import { Navigation, Pagination, Autoplay } from "swiper/modules";
 import { PhoneIcon, MapPinIcon } from "@heroicons/react/24/solid";
+import { Mail, FileText, Briefcase, FilePlus, Calculator, Gavel, Globe, Phone } from "lucide-react";
 
 import { Swiper, SwiperSlide } from "swiper/react";
 
 export default function Home() {
+  const handleEmail = (subject: string) => {
+    window.location.href = `mailto:support@yourdomain.com?subject=${encodeURIComponent(subject)}`;
+  };
   return (
     <div className="min-h-screen bg-gray-100">
       {/* Navbar */}
@@ -40,22 +44,36 @@ export default function Home() {
         </Button>
       </motion.nav>
 
-      {/* Hero Section with Animated Text */}
-      <header className="relative flex items-center justify-center bg-cover bg-center text-white m-4"
-        style={{ backgroundImage: "url('/real-estate-bg.jpg')" }}>
-        <motion.div 
-          className="text-center bg-black bg-opacity-50 p-8 rounded-lg"
-          initial={{ scale: 0.9, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          transition={{ duration: 1 }}
-        >
-          <h1 className="text-5xl font-bold">Find Your Dream Home</h1>
-          <p className="text-xl mt-3">Buy or rent the best properties hassle-free</p>
-          <Button className="mt-6">
-            <Link href="/properties">View Listings</Link>
-          </Button>
-        </motion.div>
-      </header>
+      <header
+      className="min-h-screen relative flex flex-col items-center justify-center bg-cover bg-center text-white px-4"
+      style={{ backgroundImage: "url('/real-estate-bg.jpg')" }}
+    >
+      <motion.div
+        className="text-center bg-black bg-opacity-60 p-8 rounded-lg"
+        initial={{ scale: 0.9, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        transition={{ duration: 1 }}
+      >
+        <h1 className="text-5xl font-bold">Find Your Dream Home</h1>
+        <p className="text-xl mt-3">Buy or rent the best properties hassle-free</p>
+        <Button className="mt-6 text-lg px-6 py-3">
+          <Link href="/properties">View Listings</Link>
+        </Button>
+      </motion.div>
+
+      {/* Action Buttons */}
+      <div className="mt-10 w-full max-w-md flex flex-col gap-4">
+        <Button className="w-full text-lg py-4">
+          <Link href="/properties">Buy</Link>
+        </Button>
+        <Button className="w-full text-lg py-4">
+          <Link href="/properties">Rent</Link>
+        </Button>
+        <Button className="w-full text-lg py-4">
+          <Link href="/login">Sell</Link>
+        </Button>
+      </div>
+    </header>
 
       {/* What We Do Section with Icons */}
       <section id="about" className="max-w-6xl mx-auto mt-20 p-6">
@@ -201,7 +219,191 @@ export default function Home() {
           </Card>
         </div>
       </section>
+      <div className="p-6 max-w-5xl mx-auto">
+      {/* Location Dropdown */}
+      <div className="flex items-center justify-between mb-6">
+        <h1 className="text-3xl font-bold">Karnataka</h1>
+        <Mail className="w-6 h-6 text-gray-500 cursor-pointer" />
+      </div>
 
+      {/* Property Registration Section */}
+      <h2 className="text-xl font-semibold mb-4">Property Registration</h2>
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+        <div
+          onClick={() => handleEmail("TDS Filing")}
+          className="p-4 bg-gray-100 rounded-lg flex flex-col items-center justify-center cursor-pointer hover:bg-gray-200 transition"
+        >
+          <FileText className="w-8 h-8 text-blue-600" />
+          <span className="mt-2 text-sm font-medium">TDS Filing</span>
+        </div>
+        <div
+          onClick={() => handleEmail("Guideline Value")}
+          className="p-4 bg-gray-100 rounded-lg flex flex-col items-center justify-center cursor-pointer hover:bg-gray-200 transition"
+        >
+          <Briefcase className="w-8 h-8 text-green-600" />
+          <span className="mt-2 text-sm font-medium">Guideline Value</span>
+        </div>
+        <div
+          onClick={() => handleEmail("Stamp Duty Calculator")}
+          className="p-4 bg-gray-100 rounded-lg flex flex-col items-center justify-center cursor-pointer hover:bg-gray-200 transition"
+        >
+          <Calculator className="w-8 h-8 text-yellow-600" />
+          <span className="mt-2 text-sm font-medium">Stamp Duty Calculator</span>
+        </div>
+        <div
+          onClick={() => handleEmail("Mortgage Deed Registration")}
+          className="p-4 bg-gray-100 rounded-lg flex flex-col items-center justify-center cursor-pointer hover:bg-gray-200 transition"
+        >
+          <Gavel className="w-8 h-8 text-red-600" />
+          <span className="mt-2 text-sm font-medium">Mortgage Deed</span>
+        </div>
+        <div
+          onClick={() => handleEmail("Document Writer")}
+          className="p-4 bg-gray-100 rounded-lg flex flex-col items-center justify-center cursor-pointer hover:bg-gray-200 transition"
+        >
+          <FilePlus className="w-8 h-8 text-blue-600" />
+          <span className="mt-2 text-sm font-medium">Document Writer</span>
+        </div>
+        <div
+          onClick={() => handleEmail("E-Stamp")}
+          className="p-4 bg-gray-100 rounded-lg flex flex-col items-center justify-center cursor-pointer hover:bg-gray-200 transition"
+        >
+          <Globe className="w-8 h-8 text-purple-600" />
+          <span className="mt-2 text-sm font-medium">E-Stamp</span>
+        </div>
+        <div
+          onClick={() => handleEmail("Registration Services")}
+          className="p-4 bg-gray-100 rounded-lg flex flex-col items-center justify-center cursor-pointer hover:bg-gray-200 transition"
+        >
+          <Phone className="w-8 h-8 text-blue-600" />
+          <span className="mt-2 text-sm font-medium">Registration Services</span>
+        </div>
+      </div>
+
+      {/* Post Purchase Services */}
+      <h2 className="text-xl font-semibold mb-4">Post Purchase Services</h2>
+      <div className="grid grid-cols-2 gap-4 mb-6">
+        <div
+          onClick={() => handleEmail("Khata Transfer")}
+          className="p-4 bg-gray-100 rounded-lg flex flex-col items-center justify-center cursor-pointer hover:bg-gray-200 transition"
+        >
+          <FileText className="w-8 h-8 text-orange-600" />
+          <span className="mt-2 text-sm font-medium">Khata Transfer</span>
+        </div>
+        <div
+          onClick={() => handleEmail("BESCOM Transfer")}
+          className="p-4 bg-gray-100 rounded-lg flex flex-col items-center justify-center cursor-pointer hover:bg-gray-200 transition"
+        >
+          <FilePlus className="w-8 h-8 text-green-600" />
+          <span className="mt-2 text-sm font-medium">BESCOM Transfer</span>
+        </div>
+      </div>
+
+      {/* Want Other Documents Section */}
+      <div className="p-4 bg-blue-100 border border-blue-300 rounded-lg text-center">
+        <h3 className="text-lg font-semibold text-blue-700">Want other documents?</h3>
+        <p className="text-gray-700 mt-2">
+          We'll help you with all your requirements. Fill the form and we'll call you back.
+        </p>
+        <button
+          onClick={() => handleEmail("General Inquiry")}
+          className="mt-3 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
+        >
+          Get Extra Documents
+        </button>
+      </div>
+    </div>
+      <section id="about" className="max-w-6xl mx-auto mt-20 p-6">
+        <h2 className="text-4xl font-bold text-gray-900 text-center">What our Partners say</h2>
+        <Separator className="my-6 mx-auto w-1/6" />
+        <div className="grid md:grid-cols-3 gap-6">
+          <motion.div whileHover={{ scale: 1.05 }} transition={{ duration: 0.3 }}>
+            <Card>
+              <CardHeader className="flex items-center space-x-3">
+                <HomeIcon className="h-6 w-6 text-blue-600" />
+                <CardTitle>Rajesh </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-gray-700">BBMP construction head</p>
+              </CardContent>
+            </Card>
+          </motion.div>
+          <motion.div whileHover={{ scale: 1.05 }} transition={{ duration: 0.3 }}>
+            <Card>
+              <CardHeader className="flex items-center space-x-3">
+                <BuildingOfficeIcon className="h-6 w-6 text-blue-600" />
+                <CardTitle> Ganesh</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-gray-700">Shobha developers</p>
+              </CardContent>
+            </Card>
+          </motion.div>
+          <motion.div whileHover={{ scale: 1.05 }} transition={{ duration: 0.3 }}>
+            <Card>
+              <CardHeader className="flex items-center space-x-3">
+                <GlobeAltIcon className="h-6 w-6 text-blue-600" />
+                <CardTitle> Suresh </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-gray-700">Mantri construction</p>
+              </CardContent>
+            </Card>
+          </motion.div>
+        </div>
+      </section>
+      <div className=" bg-gray-100">
+      {/* Work Showcase with Improved Carousel */}
+      <section id="work" className="max-w-6xl mx-auto mt-5 p-6">
+        <h2 className="text-4xl font-bold text-gray-900 text-center">Recent news on Real Estate</h2>
+        <Separator className="my-6 mx-auto w-1/6" />
+        
+        <Swiper
+          modules={[Navigation, Pagination, Autoplay]}
+          spaceBetween={30}
+          slidesPerView={1}
+          loop={true}
+          navigation={true}
+          pagination={{ clickable: true }}
+          autoplay={{ delay: 3000, disableOnInteraction: false }}
+          breakpoints={{
+            640: { slidesPerView: 1 },
+            768: { slidesPerView: 2 },
+            1024: { slidesPerView: 3 },
+          }}
+          className="rounded-lg"
+        >
+          <SwiperSlide>
+            <Card>
+              <CardContent>
+                <img src="/work1.jpg" alt="News 1" className="rounded-lg w-full h-60 object-cover" />
+              </CardContent>
+            </Card>
+          </SwiperSlide>
+          <SwiperSlide>
+            <Card>
+              <CardContent>
+                <img src="/work2.jpg" alt="News 2" className="rounded-lg w-full h-60 object-cover" />
+              </CardContent>
+            </Card>
+          </SwiperSlide>
+          <SwiperSlide>
+            <Card>
+              <CardContent>
+                <img src="/work3.jpg" alt="News 3" className="rounded-lg w-full h-60 object-cover" />
+              </CardContent>
+            </Card>
+          </SwiperSlide>
+          <SwiperSlide>
+            <Card>
+              <CardContent>
+                <img src="/work4.jpg" alt="News 4" className="rounded-lg w-full h-60 object-cover" />
+              </CardContent>
+            </Card>
+          </SwiperSlide>
+        </Swiper>
+      </section>
+      </div>
       {/* Our Trusted Partners */}
       <section id="partners" className="max-w-6xl mx-auto mt-20 p-6">
         <h2 className="text-4xl font-bold text-gray-900 text-center">Our Trusted Partners</h2>
