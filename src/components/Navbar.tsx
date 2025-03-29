@@ -38,7 +38,7 @@ export default function Navbar() {
             <Link href="/dashboard/seller" className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
               Post Property
             </Link>
-            <Link href="/auth/login" className="text-gray-700 hover:text-blue-600">Login</Link>
+            <Link href="/auth/login" className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Login</Link>
           </>
         )}
       </div>

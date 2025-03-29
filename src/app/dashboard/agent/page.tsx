@@ -70,7 +70,7 @@ export default function AgentDashboard() {
       }
 
       uploadedUrls.push(
-        `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/property-images/${filePath}`
+        `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/property-images/${images}`
       );
       console.log(uploadedUrls)
     }

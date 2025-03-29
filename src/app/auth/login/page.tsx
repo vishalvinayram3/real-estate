@@ -45,8 +45,8 @@ export default function Login() {
         <input type="password" placeholder="Password" onChange={(e) => setPassword(e.target.value)} className="border p-2 w-full mb-2" required />
         <button type="submit" className="bg-blue-600 text-white p-2 w-full rounded hover:bg-blue-700">Login</button>
         <div className="flex justify-evenly mt-5">
-        <Link href={'/auth/register'}>Register </Link>
-        <Link href={'/auth/reset-pin'} >Forgot Password </Link> 
+        <Link href={'/auth/register'} className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Register </Link>
+        <Link href={'/auth/reset-pin'} className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Forgot Password </Link> 
         </div>
       </form>
     </div>

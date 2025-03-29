@@ -40,36 +40,34 @@ export default function Home() {
           <Link href="#contact" className="text-gray-700 hover:text-blue-600">Contact</Link>
         </div>
         <Button asChild>
-          <Link href="/auth/login">Get Started</Link>
+          <Link href="/auth/login" className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Get Started</Link>
         </Button>
       </motion.nav>
 
       <header
-      className="min-h-screen relative flex flex-col items-center justify-center bg-cover bg-center text-white px-4"
+      className="min-h-screen relative flex flex-row items-center justify-evenly bg-cover bg-center text-white px-4"
       style={{ backgroundImage: "url('/real-estate-bg.jpg')" }}
     >
       <motion.div
-        className="text-center bg-black bg-opacity-60 p-8 rounded-lg"
+        className="text-center p-4 rounded-lg"
         initial={{ scale: 0.9, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         transition={{ duration: 1 }}
       >
-        <h1 className="text-5xl font-bold">Find Your Dream Home</h1>
-        <p className="text-xl mt-3">Buy or rent the best properties hassle-free</p>
-        <Button className="mt-6 text-lg px-6 py-3">
-          <Link href="/properties">View Listings</Link>
-        </Button>
+                <img src="icon.png" alt="News 1" className="rounded-lg w-full h-100" />
+\        <p className="text-xl text-black">Your trusted real estate partner</p>
+   
       </motion.div>
 
       {/* Action Buttons */}
       <div className="mt-10 w-full max-w-md flex flex-col gap-4">
-        <Button className="w-full text-lg py-4">
+        <Button className="w-full text-lg py-4 bg-blue-600 ">
           <Link href="/properties">Buy</Link>
         </Button>
-        <Button className="w-full text-lg py-4">
+        <Button className="w-full text-lg py-4 bg-blue-600">
           <Link href="/properties">Rent</Link>
         </Button>
-        <Button className="w-full text-lg py-4">
+        <Button className="w-full text-lg py-4  bg-blue-600 ">
           <Link href="/login">Sell</Link>
         </Button>
       </div>
@@ -77,7 +75,7 @@ export default function Home() {
 
       {/* What We Do Section with Icons */}
       <section id="about" className="max-w-6xl mx-auto mt-20 p-6">
-        <h2 className="text-4xl font-bold text-gray-900 text-center">What We Do</h2>
+        <h2 className="text-4xl font-bold text-blue-600 text-center">What We Do</h2>
         <Separator className="my-6 mx-auto w-1/6" />
         <div className="grid md:grid-cols-3 gap-6">
           <motion.div whileHover={{ scale: 1.05 }} transition={{ duration: 0.3 }}>
@@ -121,7 +119,7 @@ export default function Home() {
     <div className="min-h-screen bg-gray-100">
       {/* Work Showcase with Improved Carousel */}
       <section id="work" className="max-w-6xl mx-auto mt-20 p-6">
-        <h2 className="text-4xl font-bold text-gray-900 text-center">Work Showcase</h2>
+        <h2 className="text-4xl font-bold text-blue-600 text-center">Work Showcase</h2>
         <Separator className="my-6 mx-auto w-1/6" />
         
         <Swiper
@@ -172,7 +170,7 @@ export default function Home() {
 
       {/* Our Trusted Partners with Animation */}
       <section id="partners" className="max-w-6xl mx-auto mt-20 p-6">
-        <h2 className="text-4xl font-bold text-gray-900 text-center">Our Trusted Partners</h2>
+        <h2 className="text-4xl font-bold text-blue-600 text-center">Our Trusted Partners</h2>
         <Separator className="my-6 mx-auto w-1/6" />
         <motion.div 
           className="flex justify-center space-x-8"
@@ -187,7 +185,7 @@ export default function Home() {
       </section>
     </div>
     <section id="pricing" className="max-w-6xl mx-auto mt-20 p-6">
-        <h2 className="text-4xl font-bold text-gray-900 text-center">Our Packages</h2>
+        <h2 className="text-4xl font-bold text-blue-600 text-center">Our Packages</h2>
         <Separator className="my-6 mx-auto w-1/6" />
         <div className="grid md:grid-cols-3 gap-6">
           <Card>
@@ -314,7 +312,7 @@ export default function Home() {
       </div>
     </div>
       <section id="about" className="max-w-6xl mx-auto mt-20 p-6">
-        <h2 className="text-4xl font-bold text-gray-900 text-center">What our Partners say</h2>
+        <h2 className="text-4xl font-bold text-blue-600 text-center">What our Partners say</h2>
         <Separator className="my-6 mx-auto w-1/6" />
         <div className="grid md:grid-cols-3 gap-6">
           <motion.div whileHover={{ scale: 1.05 }} transition={{ duration: 0.3 }}>
@@ -355,7 +353,7 @@ export default function Home() {
       <div className=" bg-gray-100">
       {/* Work Showcase with Improved Carousel */}
       <section id="work" className="max-w-6xl mx-auto mt-5 p-6">
-        <h2 className="text-4xl font-bold text-gray-900 text-center">Recent news on Real Estate</h2>
+        <h2 className="text-4xl font-bold text-blue-600 text-center">Recent news on Real Estate</h2>
         <Separator className="my-6 mx-auto w-1/6" />
         
         <Swiper
@@ -406,7 +404,7 @@ export default function Home() {
       </div>
       {/* Our Trusted Partners */}
       <section id="partners" className="max-w-6xl mx-auto mt-20 p-6">
-        <h2 className="text-4xl font-bold text-gray-900 text-center">Our Trusted Partners</h2>
+        <h2 className="text-4xl font-bold text-blue-600 text-center">Our Trusted Partners</h2>
         <Separator className="my-6 mx-auto w-1/6" />
         <div className="flex justify-center space-x-8">
           <img src="/partner1.png" alt="Partner 1" className="h-16" />
@@ -415,7 +413,7 @@ export default function Home() {
         </div>
       </section>
     <section id="contact" className="max-w-6xl mx-auto mt-20 p-6 bg-white shadow-lg rounded-lg">
-      <h2 className="text-4xl font-bold text-gray-900 text-center">Contact Us</h2>
+      <h2 className="text-4xl font-bold text-blue-600 text-center">Contact Us</h2>
       <Separator className="my-6 mx-auto w-1/6" />
 
       <div className="grid md:grid-cols-2 gap-6">

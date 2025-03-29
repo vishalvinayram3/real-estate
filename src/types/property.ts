@@ -1,4 +1,5 @@
 export interface Property {
+  category: ReactNode;
   id: string; // Unique property ID
   title: string; // Property title
   description: string; // Property description
